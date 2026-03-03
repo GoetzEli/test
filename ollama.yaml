@@ -12,6 +12,7 @@ metadata:
   projectType: universal
   language: Polyglot
   version: 1.0.0
+
 projects:
   - name: cde-ollama-continue
     git:
@@ -19,6 +20,7 @@ projects:
         origin: https://github.com/redhat-developer-demos/cde-ollama-continue
       checkoutFrom:
         revision: main
+
 components:
   - name: udi
     container:
@@ -29,33 +31,39 @@ components:
       cpuRequest: 1000m
       mountSources: true
       sourceMapping: /projects
-  - attributes:
-      container-overrides:
-        resources:
-          limits:
-            cpu: 4000m
-            memory: 12Gi
-          requests:
-            cpu: 1000m
-            memory: 8Gi
-    name: ollama
+
+  - name: ollama
     container:
       image: docker.io/ollama/ollama:0.5.4
+      # Hier wird der Server beim Start aktiviert
+      command: ["/bin/sh", "-c", "ollama serve"] 
       mountSources: true
       sourceMapping: /.ollama
+      resources:
+        limits:
+          cpu: 4000m
+          memory: 12Gi
+        requests:
+          cpu: 1000m
+          memory: 8Gi
+
 commands:
   - id: pullmodel
     exec:
       component: ollama
-      commandLine: ollama pull llama3:8b
+      # Wartet kurz, bis der Server auf Port 11434 reagiert
+      commandLine: "sleep 15 && ollama pull llama3:8b" 
+      
   - id: pullautocompletemodel
     exec:
       component: ollama
-      commandLine: ollama pull starcoder2:3b
+      commandLine: "ollama pull starcoder2:3b"
+      
   - id: copyconfig
     exec:
       component: udi
-      commandLine: mkdir /home/user/.continue && cp /projects/cde-ollama-continue/continue-config.json /home/user/.continue/config.json
+      commandLine: "mkdir -p /home/user/.continue && cp /projects/cde-ollama-continue/continue-config.json /home/user/.continue/config.json"
+
 events:
   postStart:
     - pullmodel
