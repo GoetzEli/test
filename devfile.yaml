@@ -35,17 +35,15 @@ components:
   - name: ollama
     container:
       image: docker.io/ollama/ollama:0.5.4
-      # Hier wird der Server beim Start aktiviert
-      command: ["/bin/sh", "-c", "ollama serve"] 
+      command: ["/bin/sh", "-c"]
+      args: ["ollama serve"]
       mountSources: true
       sourceMapping: /.ollama
-      resources:
-        limits:
-          cpu: 4000m
-          memory: 12Gi
-        requests:
-          cpu: 1000m
-          memory: 8Gi
+      # Die Ressourcen gehören in diesen Container-Block:
+      memoryLimit: 12Gi
+      cpuLimit: 4000m
+      memoryRequest: 8Gi
+      cpuRequest: 1000m
 
 commands:
   - id: pullmodel
@@ -69,3 +67,4 @@ events:
     - pullmodel
     - pullautocompletemodel
     - copyconfig
+
