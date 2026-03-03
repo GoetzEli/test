@@ -40,8 +40,8 @@ components:
       mountSources: true
       sourceMapping: /.ollama
       # Die Ressourcen gehören in diesen Container-Block:
-      memoryLimit: 12Gi
-      cpuLimit: 4000m
+      memoryLimit: 20Gi
+      cpuLimit: 8000m
       memoryRequest: 8Gi
       cpuRequest: 1000m
 
@@ -67,4 +67,5 @@ events:
     - pullmodel
     - pullautocompletemodel
     - copyconfig
+
 
